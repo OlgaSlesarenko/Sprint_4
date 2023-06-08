@@ -1,4 +1,12 @@
 import static pages.MainPage.MAIN_PAGE;
+import static pages.MainPage.HEADER_ORDER_BUTTON;
+import static pages.OrderPage.ORDER_PAGE;
+import static pages.OrderPage.BUTTON_CONFIRM_ORDER;
+import static pages.OrderPage.BUTTON_NEXT;
+import static pages.OrderPage.BUTTON_ORDER;
+import static pages.OrderPage.CONFIRM_ORDER_HEADER;
+import static pages.OrderPage.PAGE_NAME_CUSTOMER;
+import static pages.OrderPage.PAGE_NAME_RENT;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.After;
@@ -8,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.MainPage;
 import pages.OrderPage;
 
@@ -20,6 +30,8 @@ public class ScooterOrderTest {
   public void startUp() {
     WebDriverManager.chromedriver().setup();
     driver = new ChromeDriver();
+//    WebDriverManager.firefoxdriver().setup();
+//    driver = new FirefoxDriver();
     driver.manage().window().maximize();
   }
 
@@ -44,35 +56,36 @@ public class ScooterOrderTest {
     this.comment = comment;
   }
 
-  // Тестовые данные
   @Parameterized.Parameters
   public static Object[][] getOrderCredentials() {
-    return new Object[][] {
-        { "Иван", "Иванов", "ул.Иванова, д.1", 0, "+71112223344", "01.07.2024", 0, "Какой-то комментарий"},
-        { "Петр", "Петров", "ул.Петрова, д.2", 1, "+72112223344", "02.07.2024", 1, "Какой-то комментарий"},
-        { "Ирина", "Иринина", "ул.Ирининой, д.3", 2, "+73112223344", "03.07.2024", 2, "Какой-то комментарий"},
-        { "Татьяна", "Татьянина", "ул.Татьяниной, д.4", 3, "+74112223344", "04.07.2024", 3, "Какой-то комментарий"},
-
+    return new Object[][]{
+        {"Иван", "Иванов", "ул.Иванова, д.1", 0, "+71112223344", "01.07.2024", 0, "Какой-то комментарий"},
+        {"Петр", "Петров", "ул.Петрова, д.2", 1, "+72112223344", "02.07.2024", 1, "Какой-то комментарий"},
+        {"Ирина", "Иринина", "ул.Ирининой, д.3", 2, "+73112223344", "03.07.2024", 2, "Какой-то комментарий"},
+        {"Татьяна", "Татьянина", "ул.Татьяниной, д.4", 3, "+74112223344", "04.07.2024", 3, "Какой-то комментарий"},
     };
   }
 
   @Test
-  public void loginTest() {
-    // Запускаем браузер, переходим на сайт и нажимаем кнопку заказа самоката
-    WebDriver driver = new ChromeDriver();
+  public void orderTest() {
+    // переходим на сайт и нажимаем кнопку заказа самоката
     driver.get(MAIN_PAGE);
     MainPage mainPage = new MainPage(driver);
-    mainPage.clickElement(mainPage.getHeaderOrderButton());
-    OrderPage orderPage = new OrderPage();
-
-
-//    driver.findElement(By.className("email")).sendKeys(email);
-//    driver.findElement(By.className("password")).sendKeys(password);
-//    driver.findElement(By.className("form")).click();
-
-    // Если логин прошел успешно (result = true), элемент profile отображается на экране
-    // В противном случае элемент не виден
-//    assertEquals(result, driver.findElement(By.className("profile")).isDisplayed());
+    mainPage.clickElement(HEADER_ORDER_BUTTON);
+    //переход к странице заказа самоката
+    driver.get(ORDER_PAGE);
+    OrderPage orderPage = new OrderPage(driver);
+    //заполнение формы заказчика
+    new WebDriverWait(driver, 2).until(ExpectedConditions.visibilityOfElementLocated(PAGE_NAME_CUSTOMER));
+    orderPage.fillInFormPerson(name, surname, adress, dataIndex, phone);
+    orderPage.clickElement(BUTTON_NEXT);
+    //заполнение формы заказа
+    new WebDriverWait(driver, 2).until(ExpectedConditions.visibilityOfElementLocated(PAGE_NAME_RENT));
+    orderPage.fillInFormOrder(date, position, comment);
+    orderPage.clickElement(BUTTON_ORDER);
+    //проверка подтверждения заказа
+    orderPage.clickElement(BUTTON_CONFIRM_ORDER);
+    new WebDriverWait(driver, 2).until(ExpectedConditions.visibilityOfElementLocated(CONFIRM_ORDER_HEADER));
   }
 
   @After
