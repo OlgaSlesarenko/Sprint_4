@@ -1,3 +1,4 @@
+import static pages.MainPage.BODY_ORDER_BUTTON;
 import static pages.MainPage.MAIN_PAGE;
 import static pages.MainPage.HEADER_ORDER_BUTTON;
 import static pages.OrderPage.ORDER_PAGE;
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.MainPage;
@@ -57,7 +59,7 @@ public class ScooterOrderTest {
   }
 
   @Parameterized.Parameters
-  public static Object[][] getOrderCredentials() {
+  public static Object[][] getOrderData() {
     return new Object[][]{
         {"Иван", "Иванов", "ул.Иванова, д.1", 0, "+71112223344", "01.07.2024", 0, "Какой-то комментарий"},
         {"Петр", "Петров", "ул.Петрова, д.2", 1, "+72112223344", "02.07.2024", 1, "Какой-то комментарий"},
@@ -67,12 +69,23 @@ public class ScooterOrderTest {
   }
 
   @Test
-  public void orderTest() {
-    // переходим на сайт и нажимаем кнопку заказа самоката
+  public void orderTestWithHeaderButton() {
     driver.get(MAIN_PAGE);
     MainPage mainPage = new MainPage(driver);
     mainPage.clickElement(HEADER_ORDER_BUTTON);
-    //переход к странице заказа самоката
+    createOrder();
+  }
+
+  @Test
+  public void orderTestWithBodyButton() {
+    driver.get(MAIN_PAGE);
+    MainPage mainPage = new MainPage(driver);
+    mainPage.scrollToBodyOrderButton();
+    mainPage.clickElement(BODY_ORDER_BUTTON);
+    createOrder();
+  }
+
+  private void createOrder() {
     driver.get(ORDER_PAGE);
     OrderPage orderPage = new OrderPage(driver);
     //заполнение формы заказчика

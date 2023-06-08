@@ -1,6 +1,7 @@
 package pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 public class MainPage {
@@ -12,7 +13,7 @@ public class MainPage {
   //кнопка "Заказать" в Header
   public static final By HEADER_ORDER_BUTTON = By.className("Button_Button__ra12g");
   //кнопка "Заказать" в Body
-  private final By bodyOrderButton = By.cssSelector(".Button_Button__ra12g.Button_Middle__1CSJM");
+  public static final By BODY_ORDER_BUTTON = By.cssSelector(".Button_Button__ra12g.Button_Middle__1CSJM");
   //Заголовок раздела "Вопросы о важном"
   public static final By FAQ_TITLE = By.xpath(".//div[contains(text(), 'Вопросы о важном')]");
   // метод кликает по нужному элементу
@@ -39,6 +40,10 @@ public class MainPage {
   //метод для получения текста в элементе
   public String getElementText(By element) {
     return driver.findElement(element).getText();
+  }
+  //скролл до кнопки заказа в body
+  public void scrollToBodyOrderButton() {
+    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", driver.findElement(BODY_ORDER_BUTTON));
   }
 
   public MainPage(WebDriver driver) {
